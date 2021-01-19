@@ -42,6 +42,9 @@ else:
     # sys.path.append('C:\\Program Files\\NVIDIA GPU Computing Toolkit\\CUDA\\v10.1\\bin')
 
 
+def get_py_dir():
+    return py_dir
+
 def get_datasets_dir(py_dir):
     return py_dir + '\\Datasets'
 

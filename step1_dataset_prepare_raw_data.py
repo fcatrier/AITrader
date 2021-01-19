@@ -44,18 +44,18 @@ Mais attention ce tri n'est pas adapté à l'extaction : ne pas oublier de l'inv
 import os
 import sys
 
-cur_dir = os.getcwd()
-if cur_dir == 'C:\\Users\\T0042310\\MyApp\\miniconda3':
-    sys.path.append('C:\\Users\\T0042310\\Documents\\Perso\\Py\\pythonProject\\test-master')
-    py_dir = 'C:\\Users\\T0042310\\Documents\\Perso\\Py'
-elif cur_dir == 'C:\\Users\\Frédéri\\PycharmProjects\\pythonProject':
-    py_dir = 'C:\\Users\\Frédéri\\Py'
-else:
-    sys.path.append('E:\\Py\\pythonProject')
-    sys.path.append('C:\\Program Files\\NVIDIA GPU Computing Toolkit\\cuDNN\\cuDNN v7.6.5 for CUDA 10.1\\bin')
-    sys.path.append('C:\\Program Files\\NVIDIA GPU Computing Toolkit\\cuDNN\\cuDNN v8.0.3.33 for CUDA 10.1\\bin')
-    sys.path.append('C:\\Program Files\\NVIDIA GPU Computing Toolkit\\CUDA\\v10.1\\bin')
-    py_dir = 'E:\\Py'
+# cur_dir = os.getcwd()
+# if cur_dir == 'C:\\Users\\T0042310\\MyApp\\miniconda3':
+#     sys.path.append('C:\\Users\\T0042310\\Documents\\Perso\\Py\\pythonProject\\test-master')
+#     py_dir = 'C:\\Users\\T0042310\\Documents\\Perso\\Py'
+# elif cur_dir == 'C:\\Users\\Frédéri\\PycharmProjects\\pythonProject':
+#     py_dir = 'C:\\Users\\Frédéri\\Py'
+# else:
+#     sys.path.append('E:\\Py\\pythonProject')
+#     sys.path.append('C:\\Program Files\\NVIDIA GPU Computing Toolkit\\cuDNN\\cuDNN v7.6.5 for CUDA 10.1\\bin')
+#     sys.path.append('C:\\Program Files\\NVIDIA GPU Computing Toolkit\\cuDNN\\cuDNN v8.0.3.33 for CUDA 10.1\\bin')
+#     sys.path.append('C:\\Program Files\\NVIDIA GPU Computing Toolkit\\CUDA\\v10.1\\bin')
+#     py_dir = 'E:\\Py'
 
 import arbo
 import pandas
@@ -769,8 +769,8 @@ def generate_raw_data(dataset_name):
 # import numpy
 
 
-def get_prepared_dataset_full_filename(dataset_name,symbol,period):
-   return arbo.get_source_data_dir(py_dir,dataset_name)+'\\'+symbol+'_2018-2020-10-18_'+period+'.csv'
+def get_prepared_dataset_full_filename(dataset_name, symbol, period):
+   return arbo.get_source_data_dir(arbo.get_py_dir(),dataset_name)+'\\'+symbol+'_2018-2020-10-18_'+period+'.csv'
 
 def read_prepared_dataset(full_filename):
    df=pandas.read_csv(full_filename, index_col=0, parse_dates=True)

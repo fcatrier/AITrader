@@ -20,14 +20,14 @@ else:
     # sys.path.append('C:\\Program Files\\NVIDIA GPU Computing Toolkit\\cuDNN\\cuDNN v8.0.3.33 for CUDA 10.1\\bin')
     # sys.path.append('C:\\Program Files\\NVIDIA GPU Computing Toolkit\\CUDA\\v10.1\\bin')
 
-import new1
+import learn_script
 
 
 _dataset_name = 'work'
 _dir_npy = '\\npy_current'
 
 if __name__ == '__main__':
-    new1.execute(_dataset_name, _dir_npy)
+    learn_script.execute(_dataset_name, _dir_npy)
 
 # import arbo
 # import learn_history
