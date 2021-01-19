@@ -2,28 +2,6 @@
 # Copyright (c) 2020-2021 by Frederi CATRIER - All rights reserved.
 #
 
-# import os
-# import sys
-# import keras
-
-# cur_dir = os.getcwd()
-# if cur_dir == 'C:\\Users\\T0042310\\MyApp\\miniconda3':
-#     sys.path.append('C:\\Users\\T0042310\\Documents\\Perso\\Py\\pythonProject\\test-master')
-#     py_dir = 'C:\\Users\\T0042310\\Documents\\Perso\\Py'
-# elif cur_dir == 'C:\\Users\\Frédéri\\PycharmProjects\\pythonProject':
-#     py_dir = 'C:\\Users\\Frédéri\\Py'
-# else:
-#     sys.path.append('E:\\Py\\pythonProject')
-#     sys.path.append('E:\\Py\\pythonProject\\__pycache__')
-#     py_dir = 'E:\\Py'
-#     sys.path.append('C:\\Program Files\\NVIDIA GPU Computing Toolkit\\cuDNN\\cuDNN v7.6.5 for CUDA 10.1\\bin')
-#     sys.path.append('C:\\Program Files\\NVIDIA GPU Computing Toolkit\\cuDNN\\cuDNN v8.0.3.33 for CUDA 10.1\\bin')
-#     sys.path.append('C:\\Program Files\\NVIDIA GPU Computing Toolkit\\CUDA\\v10.1\\bin')
-
-
-#
-# imports from this project
-#
 import arbo
 import learn_evaluate_results
 import learn_history
@@ -72,20 +50,27 @@ def learn(dataset_name, dir_npy, model_manager, learning_data, loops_count=1):
             print("model.count_params()=", model.count_params())
             print("train_params : ", train_params)
         #
-        model_manager.fit(learning_data)
+        learning_metrics_template_this_fit = model_manager.fit(learning_data)
         #
-        post_learning_metrics_val   = learn_evaluate_results.post_learning_metrics(model, learning_data, 'val')
-        post_learning_metrics_test1 = learn_evaluate_results.post_learning_metrics(model, learning_data, 'test1')
-        post_learning_metrics_test2 = learn_evaluate_results.post_learning_metrics(model, learning_data, 'test2')
+
+        # calcul des métriques uniquement si l'apprentissage a été un minimum concluant
+        post_learning_metrics_val = None
+        post_learning_metrics_test1 = None
+        post_learning_metrics_test2 = None
+        if learning_metrics_template_this_fit['val_accuracy'] >= 0.5:
+            post_learning_metrics_val   = learn_evaluate_results.post_learning_metrics(model, learning_data, 'val')
+            post_learning_metrics_test1 = learn_evaluate_results.post_learning_metrics(model, learning_data, 'test1')
+            post_learning_metrics_test2 = learn_evaluate_results.post_learning_metrics(model, learning_data, 'test2')
         #
         path = arbo.npy_path_with_prefix(dataset_name, dir_npy, idx_run_loop)
         #
         utils.dictionary_save(path, model_manager.get_properties())
         utils.dictionary_save(path, step2.step2_params)
         utils.dictionary_save(path, step3.step3_params)
-        utils.dictionary_save(path, post_learning_metrics_val,   'val')
-        utils.dictionary_save(path, post_learning_metrics_test1, 'train1')
-        utils.dictionary_save(path, post_learning_metrics_test2, 'train2')
+        if learning_metrics_template_this_fit['val_accuracy'] >= 0.5:
+            utils.dictionary_save(path, post_learning_metrics_val,   'val')
+            utils.dictionary_save(path, post_learning_metrics_test1, 'train1')
+            utils.dictionary_save(path, post_learning_metrics_test2, 'train2')
         #
         idx_run_loop += 1
         #
@@ -129,21 +114,21 @@ def execute(dataset_name, dir_npy):
         'UsaInd_M15_time_slot',
         'UsaInd_M15_pRSI_3', 'UsaInd_M15_pRSI_5', 'UsaInd_M15_pRSI_8', 'UsaInd_M15_pRSI_13', 'UsaInd_M15_pRSI_21']
     step3.step3_params['step3_tests_by_class'] = 66
-    step3.step3_params['step3_idx_start'] = 0  # step3_idx_start = int(random.random()*1000)
+    step3.step3_params['step3_idx_start'] = 0  # may be step3_idx_start = int(random.random()*1000)
     #
-    for step3_recouvrement in (8, 13, 21, 34, 55, 89, 144, 233):   # (2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233):
+    for step3_time_depth in (2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233):
         for step3_samples_by_class in (330, 660):    # (330, 660, 990, 1320, 1650, 1980):
             #
             # step3 parameters : modified by this loop
             #
-            step3.step3_params['step3_recouvrement'] = step3_recouvrement  # 1 / proportion recouvrement
-            step3.step3_params['step3_time_depth'] = step3_recouvrement
+            step3.step3_params['step3_time_depth'] = step3_time_depth
+            step3.step3_params['step3_recouvrement'] = step3_time_depth
             step3.step3_params['step3_samples_by_class'] = step3_samples_by_class
             #
             try:
                 fcg.compute_learning_data_GRU_LSTM_Conv1D_additional_params(step3.step3_params)
                 learning_data = fcg.compute_learning_data_GRU_LSTM_Conv1D()
-            except :
+            except:
                 print("fcg.create_step3_data failed. STOP")
                 return
             #
@@ -165,8 +150,12 @@ def execute(dataset_name, dir_npy):
             #
             model_manager.update_properties(_mm_dict)
             #
-            for conv1D_block1_filters in (55, 89, 144, 233, 377, 610, 987):
-                for conv1D_block1_kernel_size in (2, 3, 5):
+            for conv1D_block1_filters in (21, 55, 89, 144, 233, 377, 610, 987):
+                for conv1D_block1_kernel_size in (2, 3, 5, 8):
+                    #
+                    if conv1D_block1_kernel_size >= step3_time_depth:
+                        continue
+                    #
                     #
                     # Model and learning parameters : modified by this loop
                     #

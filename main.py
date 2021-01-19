@@ -8,17 +8,13 @@ import sys
 
 cur_dir = os.getcwd()
 if cur_dir == 'C:\\Users\\T0042310\\MyApp\\miniconda3':
-    sys.path.append('C:\\Users\\T0042310\\Documents\\Perso\\Py\\pythonProject\\test-master')
+    sys.path.append('C:\\Users\\T0042310\\Documents\\Perso\\Py\\AITrader')
     py_dir = 'C:\\Users\\T0042310\\Documents\\Perso\\Py'
-elif cur_dir == 'C:\\Users\\Frédéri\\PycharmProjects\\pythonProject':
+elif cur_dir == 'C:\\Users\\Frédéri\\PycharmProjects\\AITrader':
     py_dir = 'C:\\Users\\Frédéri\\Py'
 else:
-    sys.path.append('E:\\Py\\pythonProject')
-    sys.path.append('E:\\Py\\pythonProject\\__pycache__')
+    sys.path.append('E:\\Py\\AITrader')
     py_dir = 'E:\\Py'
-    # sys.path.append('C:\\Program Files\\NVIDIA GPU Computing Toolkit\\cuDNN\\cuDNN v7.6.5 for CUDA 10.1\\bin')
-    # sys.path.append('C:\\Program Files\\NVIDIA GPU Computing Toolkit\\cuDNN\\cuDNN v8.0.3.33 for CUDA 10.1\\bin')
-    # sys.path.append('C:\\Program Files\\NVIDIA GPU Computing Toolkit\\CUDA\\v10.1\\bin')
 
 import learn_script
 
@@ -28,6 +24,7 @@ _dir_npy = '\\npy_current'
 
 if __name__ == '__main__':
     learn_script.execute(_dataset_name, _dir_npy)
+
 
 # import arbo
 # import learn_history

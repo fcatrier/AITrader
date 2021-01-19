@@ -6,25 +6,9 @@
 # Méthodes pour l'analyse des résultats post learning
 # -----------------------------------------------------------------------------
 
-import os
-import sys
-
 import numpy
 import pandas
 from sklearn.metrics import confusion_matrix
-
-# cur_dir = os.getcwd()
-# if cur_dir == 'C:\\Users\\T0042310\\MyApp\\miniconda3':
-#     sys.path.append('C:\\Users\\T0042310\\Documents\\Perso\\Py\\pythonProject\\test-master')
-#     py_dir = 'C:\\Users\\T0042310\\Documents\\Perso\\Py'
-# elif cur_dir == 'C:\\Users\\Frédéri\\PycharmProjects\\pythonProject':
-#     py_dir = 'C:\\Users\\Frédéri\\Py'
-# else:
-#     sys.path.append('E:\\Py\\pythonProject')
-#     sys.path.append('C:\\Program Files\\NVIDIA GPU Computing Toolkit\\cuDNN\\cuDNN v7.6.5 for CUDA 10.1\\bin')
-#     sys.path.append('C:\\Program Files\\NVIDIA GPU Computing Toolkit\\cuDNN\\cuDNN v8.0.3.33 for CUDA 10.1\\bin')
-#     sys.path.append('C:\\Program Files\\NVIDIA GPU Computing Toolkit\\CUDA\\v10.1\\bin')
-#     py_dir = 'E:\\Py'
 
 import step2_dataset_prepare_target_data as step2
 
@@ -32,6 +16,7 @@ import step2_dataset_prepare_target_data as step2
 learning_metrics_template = {'train_loss': None, 'val_loss': None, 'train_accuracy': None, 'val_accuracy': None}
 
 post_learning_metrics_template = {'acc': None, 'res_eval_result_atr': None, 'cm': None, 'pc_resultat': None}
+
 
 obsolete_metrics_for_backward_compatibility = {
     'model_dropout_rate': None,
