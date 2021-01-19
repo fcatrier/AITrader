@@ -8,9 +8,9 @@
 
 import os
 import sys
-import pandas
-import numpy
 
+import numpy
+import pandas
 
 cur_dir = os.getcwd()
 if cur_dir == 'C:\\Users\\T0042310\\MyApp\\miniconda3':

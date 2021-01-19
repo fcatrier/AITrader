@@ -8,10 +8,10 @@
 
 import os
 import sys
-import pandas
-import numpy
-from sklearn.metrics import confusion_matrix
 
+import numpy
+import pandas
+from sklearn.metrics import confusion_matrix
 
 cur_dir = os.getcwd()
 if cur_dir == 'C:\\Users\\T0042310\\MyApp\\miniconda3':
@@ -26,8 +26,6 @@ else:
     sys.path.append('C:\\Program Files\\NVIDIA GPU Computing Toolkit\\CUDA\\v10.1\\bin')
     py_dir = 'E:\\Py'
 
-
-import arbo
 import step2_dataset_prepare_target_data as step2
 
 

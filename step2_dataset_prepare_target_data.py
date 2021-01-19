@@ -28,10 +28,6 @@ else:
     sys.path.append('C:\\Program Files\\NVIDIA GPU Computing Toolkit\\CUDA\\v10.1\\bin')
     py_dir = 'E:\\Py'
 
-
-import arbo
-
-import numpy
 import os
 
 

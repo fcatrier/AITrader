@@ -93,11 +93,11 @@ injecté pour 1 sample   (nombre de colonnes),
 
 import os
 import sys
-import pandas
-import numpy
-from sklearn.utils import shuffle
-from sklearn.preprocessing import MinMaxScaler
 
+import numpy
+import pandas
+from sklearn.preprocessing import MinMaxScaler
+from sklearn.utils import shuffle
 
 cur_dir = os.getcwd()
 if cur_dir == 'C:\\Users\\T0042310\\MyApp\\miniconda3':
