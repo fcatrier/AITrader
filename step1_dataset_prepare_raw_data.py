@@ -2,13 +2,6 @@
 # Copyright (c) 2020-2021 by Frederi CATRIER - All rights reserved.
 #
 
-#
-# TODO
-#  6 - ajouter informations (voir données dans XL Cockpit)
-#        par exemple : - pics et creux
-#                      - seuils symboliques
-#                      - xMA
-#
 """
 
 Tri plus ancien (head) vers plus récent (tail): (df = df.sort_index(ascending=True))
@@ -44,18 +37,18 @@ Mais attention ce tri n'est pas adapté à l'extaction : ne pas oublier de l'inv
 import os
 import sys
 
-cur_dir = os.getcwd()
-if cur_dir == 'C:\\Users\\T0042310\\MyApp\\miniconda3':
-    sys.path.append('C:\\Users\\T0042310\\Documents\\Perso\\Py\\pythonProject\\test-master')
-    py_dir = 'C:\\Users\\T0042310\\Documents\\Perso\\Py'
-elif cur_dir == 'C:\\Users\\Frédéri\\PycharmProjects\\pythonProject':
-    py_dir = 'C:\\Users\\Frédéri\\Py'
-else:
-    sys.path.append('E:\\Py\\pythonProject')
-    sys.path.append('C:\\Program Files\\NVIDIA GPU Computing Toolkit\\cuDNN\\cuDNN v7.6.5 for CUDA 10.1\\bin')
-    sys.path.append('C:\\Program Files\\NVIDIA GPU Computing Toolkit\\cuDNN\\cuDNN v8.0.3.33 for CUDA 10.1\\bin')
-    sys.path.append('C:\\Program Files\\NVIDIA GPU Computing Toolkit\\CUDA\\v10.1\\bin')
-    py_dir = 'E:\\Py'
+# cur_dir = os.getcwd()
+# if cur_dir == 'C:\\Users\\T0042310\\MyApp\\miniconda3':
+#     sys.path.append('C:\\Users\\T0042310\\Documents\\Perso\\Py\\pythonProject\\test-master')
+#     py_dir = 'C:\\Users\\T0042310\\Documents\\Perso\\Py'
+# elif cur_dir == 'C:\\Users\\Frédéri\\PycharmProjects\\pythonProject':
+#     py_dir = 'C:\\Users\\Frédéri\\Py'
+# else:
+#     sys.path.append('E:\\Py\\pythonProject')
+#     sys.path.append('C:\\Program Files\\NVIDIA GPU Computing Toolkit\\cuDNN\\cuDNN v7.6.5 for CUDA 10.1\\bin')
+#     sys.path.append('C:\\Program Files\\NVIDIA GPU Computing Toolkit\\cuDNN\\cuDNN v8.0.3.33 for CUDA 10.1\\bin')
+#     sys.path.append('C:\\Program Files\\NVIDIA GPU Computing Toolkit\\CUDA\\v10.1\\bin')
+#     py_dir = 'E:\\Py'
 
 import arbo
 import pandas
@@ -68,7 +61,7 @@ from scipy import stats
 # -----------------------------------------------------------------------------
 
 def get_prepared_dataset_full_filename(dataset_name,symbol,period):
-   return arbo.get_source_data_dir(py_dir,dataset_name)+'\\'+symbol+'_2018-2020-10-18_'+period+'.csv'
+   return arbo.get_source_data_dir(arbo.get_py_dir(),dataset_name)+'\\'+symbol+'_2018-2020-10-18_'+period+'.csv'
 
 def read_data(data_dir):
    df=pandas.read_csv(data_dir, index_col=0, parse_dates=True)
@@ -566,7 +559,7 @@ def prepare_raw_dataset_H1(df):
    return dfH1
 
 def get_raw_dataset_full_filename(dataset_name,symbol):
-   return arbo.get_source_data_dir(py_dir,dataset_name)+'\\DownloaderNN_'+symbol+'_M1_NNDataset_2018-2020-10-18.csv'
+   return arbo.get_source_data_dir(arbo.get_py_dir(),dataset_name)+'\\DownloaderNN_'+symbol+'_M1_NNDataset_2018-2020-10-18.csv'
 
 # -----------------------------------------------------------------------------
 # Script de génération sur la base de données brutes (raw MT5)
@@ -769,8 +762,8 @@ def generate_raw_data(dataset_name):
 # import numpy
 
 
-def get_prepared_dataset_full_filename(dataset_name,symbol,period):
-   return arbo.get_source_data_dir(py_dir,dataset_name)+'\\'+symbol+'_2018-2020-10-18_'+period+'.csv'
+def get_prepared_dataset_full_filename(dataset_name, symbol, period):
+   return arbo.get_source_data_dir(arbo.get_py_dir(),dataset_name)+'\\'+symbol+'_2018-2020-10-18_'+period+'.csv'
 
 def read_prepared_dataset(full_filename):
    df=pandas.read_csv(full_filename, index_col=0, parse_dates=True)

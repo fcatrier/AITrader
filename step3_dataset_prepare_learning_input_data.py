@@ -2,16 +2,6 @@
 # Copyright (c) 2020-2021 by Frederi CATRIER - All rights reserved.
 #
 
-#
-# TODO
-#
-#  6 - ajouter informations (voir données dans XL Cockpit)
-#        par exemple : - pics et creux
-#                      - seuils symboliques
-#                      - xMA
-#
-
-
 """
 
 
@@ -89,29 +79,11 @@ injecté pour 1 sample   (nombre de colonnes),
 
 """
 
-# python
-
-import os
-import sys
 
 import numpy
 import pandas
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.utils import shuffle
-
-cur_dir = os.getcwd()
-if cur_dir == 'C:\\Users\\T0042310\\MyApp\\miniconda3':
-    sys.path.append('C:\\Users\\T0042310\\Documents\\Perso\\Py\\pythonProject\\test-master')
-    py_dir = 'C:\\Users\\T0042310\\Documents\\Perso\\Py'
-elif cur_dir == 'C:\\Users\\Frédéri\\PycharmProjects\\pythonProject':
-    py_dir = 'C:\\Users\\Frédéri\\Py'
-else:
-    sys.path.append('E:\\Py\\pythonProject')
-    sys.path.append('C:\\Program Files\\NVIDIA GPU Computing Toolkit\\cuDNN\\cuDNN v7.6.5 for CUDA 10.1\\bin')
-    sys.path.append('C:\\Program Files\\NVIDIA GPU Computing Toolkit\\cuDNN\\cuDNN v8.0.3.33 for CUDA 10.1\\bin')
-    sys.path.append('C:\\Program Files\\NVIDIA GPU Computing Toolkit\\CUDA\\v10.1\\bin')
-    py_dir = 'E:\\Py'
-
 
 import arbo
 import step2_dataset_prepare_target_data as step2
@@ -535,17 +507,14 @@ def merge_parts(part1,part2):
    #
    copy_part1 = part1.copy()
    copy_part1.insert(1, 'idx_merge_part', range(0, len(copy_part1)))
-   copy_part1
    #
    copy_part2 = part2.copy()
    copy_part2.insert(1, 'idx_merge_part', range(0, len(copy_part2)))
-   copy_part2
    # 4/12 : ajout de left_index=True pour conserver l'index DateTime et pouvoir trier à la fin en
    #        ordre inverse pour les entrées TimeSeries
    #merged = pandas.merge(left=copy_part1, right=copy_part2, left_on='idx_merge_part', right_on='idx_merge_part')
    merged = pandas.merge(left=copy_part1, right=copy_part2, left_on='idx_merge_part', right_on='idx_merge_part',left_index=True)
    merged = merged.drop('idx_merge_part',axis=1)
-   merged
    #
    return merged
 
@@ -721,7 +690,6 @@ def prepare_dfLearn(all_df_bigs,big_for_target,target_class_col_name,symbols_set
    dfLearn.insert(1, 'idx',range( 0, len(dfLearn)))
    dfLearn.index = dfLearn['idx']
    dfLearn = dfLearn.drop(['idx'],axis=1)
-   dfLearn
    #
    # 04/12 : ajout d'un sort sur le résultat final pour ne pas être regroupé par classes
    #         mais par dates descendantes
@@ -799,7 +767,6 @@ def prepare_XYlearn_LSTM2(all_df_bigs,big_for_target,target_class_col_name,symbo
    cols = []
    cols.append(target_class_col_name)
    df_y_1d.columns = cols
-   df_y_1d
    #
    df_y_Nd = pandas.DataFrame()              #en df
    for col_value in range(min(arr_learn_Y),max(arr_learn_Y)+1):
@@ -874,7 +841,6 @@ def prepare_XYlearn_LSTM (all_df_bigs,big_for_target,target_class_col_name,symbo
    cols = []
    cols.append(target_class_col_name)
    df_y_1d.columns = cols
-   df_y_1d
    #
    df_y_Nd = pandas.DataFrame()              #en df
    for col_value in range(min(arr_learn_Y),max(arr_learn_Y)+1):
@@ -932,7 +898,6 @@ def generate_scaled_ohlc_v3(all_df_bigs,symbols_set,periods,dateJoin,time_depth,
          #
          if(needRescaling==True):
             merged_P1_P2_P3_rescaled = scale_dataset(merged_P1_P2_P3,time_depth)
-            merged_P1_P2_P3_rescaled
          else:
             merged_P1_P2_P3_rescaled = merged_P1_P2_P3
          #
@@ -959,34 +924,23 @@ def scale_dataset(dataset_to_scale,time_depth):
          dataset_to_scale_forScaler.append(dataset_to_scale[col][i])
    #
    dataset_to_scale_forScaler = numpy.array(dataset_to_scale_forScaler)
-   dataset_to_scale_forScaler.shape
    dataset_to_scale_forScaler = dataset_to_scale_forScaler.reshape(-1,1)
-   dataset_to_scale_forScaler
-   dataset_to_scale_forScaler.shape
    theMin = dataset_to_scale_forScaler.min()
    theMax = dataset_to_scale_forScaler.max()
    #
    scaler = MinMaxScaler()
    dataset_to_scale_scaled = scaler.fit_transform(dataset_to_scale_forScaler)
-   dataset_to_scale_scaled
-   dataset_to_scale_scaled.shape
    #
    dataset_to_scale_forScaler = dataset_to_scale_forScaler.reshape(-1,len(dataset_to_scale.columns))
-   dataset_to_scale_forScaler
-   dataset_to_scale_forScaler.shape
    #
    dataset_to_scale_scaled = dataset_to_scale_scaled.reshape(-1,len(dataset_to_scale.columns))
-   dataset_to_scale_scaled
-   dataset_to_scale_scaled.shape
    # remise sous forme de pandas.Dataframe
    colNames = dataset_to_scale.columns
    dataset_to_scale = pandas.DataFrame(dataset_to_scale_forScaler)
    dataset_to_scale.columns = colNames
-   dataset_to_scale
    #
    dataset_to_scale_rescaled = pandas.DataFrame(dataset_to_scale_scaled)
    dataset_to_scale_rescaled.columns = colNames
-   dataset_to_scale_rescaled
    #
    return dataset_to_scale_rescaled
 
@@ -1087,7 +1041,7 @@ def dfLearn_from_file(dataset_name,target_period,profondeur_analyse,spread_x,rat
                #symbol_for_target,targetLongShort,ratio_coupure,
                symbols_set,time_depth,samples_by_class,shuffle_in_data,periods,column_sets,old_to_recent)
    #
-   dfLearn = pandas.read_csv(arbo.get_study_dir(py_dir,dataset_name)+'\\'+filename, index_col=0)
+   dfLearn = pandas.read_csv(arbo.get_study_dir(arbo.get_py_dir(),dataset_name)+'\\'+filename, index_col=0)
    #
    return dfLearn
 
@@ -1255,7 +1209,7 @@ def rename_not_LSTM(dataset_name,target_period,profondeur_analyse,spread_x,ratio
       column_sets,
       old_to_recent)
    print(filename_renameFrom)
-   check_exists_filename = check_file_exists(arbo.get_study_dir(py_dir,dataset_name)+'\\'+filename_renameFrom,'csv')
+   check_exists_filename = check_file_exists(arbo.get_study_dir(arbo.get_py_dir(),dataset_name)+'\\'+filename_renameFrom,'csv')
    if(check_exists_filename==True):
       print("Fichier existant OK, renommage")
       filename_renameTo = get_dfLearn_filename(
@@ -1271,7 +1225,7 @@ def rename_not_LSTM(dataset_name,target_period,profondeur_analyse,spread_x,ratio
          periods,
          column_sets,
          old_to_recent)
-      shutil.copyfile(arbo.get_study_dir(py_dir,dataset_name)+'\\'+filename_renameFrom, arbo.get_study_dir(py_dir,dataset_name)+'\\'+filename_renameTo)
+      shutil.copyfile(arbo.get_study_dir(arbo.get_py_dir(),dataset_name)+'\\'+filename_renameFrom, arbo.get_study_dir(arbo.get_py_dir(),dataset_name)+'\\'+filename_renameTo)
    else:
       print("Fichier NON exitant, pas de renommage")
 
@@ -1296,7 +1250,7 @@ def generate_not_LSTM(filenames_list_not_LSTM,dataset_name,all_df_bigs,
       column_sets,
       old_to_recent)
    #
-   check_exists_filename = check_file_exists(arbo.get_study_dir(py_dir,dataset_name)+'\\'+filename,'csv')
+   check_exists_filename = check_file_exists(arbo.get_study_dir(arbo.get_py_dir(),dataset_name)+'\\'+filename,'csv')
    if(check_exists_filename==True):
       print("Fichier déjà existant")
    else:
@@ -1318,7 +1272,7 @@ def generate_not_LSTM(filenames_list_not_LSTM,dataset_name,all_df_bigs,
       #
       # sauvegarde
       #
-      dfLearn.to_csv(arbo.get_study_dir(py_dir,dataset_name)+'\\'+filename)
+      dfLearn.to_csv(arbo.get_study_dir(arbo.get_py_dir(),dataset_name)+'\\'+filename)
    #
    filenames_list_not_LSTM.append(filename)
    return filenames_list_not_LSTM
@@ -1388,16 +1342,16 @@ def save_learn_files_LSTM(dataset_name,np_learn_X,df_y_1d,df_y_Nd,df_date_join,
    target_period,profondeur_analyse,symbols_set,time_depth,samples_by_class,periods,column_sets):
    #
    filename_np_learn_X = get_dfLearn_filename_LSTM(target_period,profondeur_analyse,symbols_set,time_depth,samples_by_class,periods,column_sets,'np_learn_X')
-   numpy.save(arbo.get_study_dir(py_dir,dataset_name)+'\\'+filename_np_learn_X, np_learn_X)
+   numpy.save(arbo.get_study_dir(arbo.get_py_dir(),dataset_name)+'\\'+filename_np_learn_X, np_learn_X)
    #
    filename_df_y_1d = get_dfLearn_filename_LSTM(target_period,profondeur_analyse,symbols_set,time_depth,samples_by_class,periods,column_sets,'df_y_1d')
-   df_y_1d.to_csv(arbo.get_study_dir(py_dir,dataset_name)+'\\'+filename_df_y_1d)
+   df_y_1d.to_csv(arbo.get_study_dir(arbo.get_py_dir(),dataset_name)+'\\'+filename_df_y_1d)
    #
    filename_df_y_Nd = get_dfLearn_filename_LSTM(target_period,profondeur_analyse,symbols_set,time_depth,samples_by_class,periods,column_sets,'df_y_Nd')
-   df_y_Nd.to_csv(arbo.get_study_dir(py_dir,dataset_name)+'\\'+filename_df_y_Nd)
+   df_y_Nd.to_csv(arbo.get_study_dir(arbo.get_py_dir(),dataset_name)+'\\'+filename_df_y_Nd)
    #
    filename_df_date_join = get_dfLearn_filename_LSTM(target_period,profondeur_analyse,symbols_set,time_depth,samples_by_class,periods,column_sets,'df_date_join')
-   df_date_join.to_csv(arbo.get_study_dir(py_dir,dataset_name)+'\\'+filename_df_date_join)
+   df_date_join.to_csv(arbo.get_study_dir(arbo.get_py_dir(),dataset_name)+'\\'+filename_df_date_join)
    #
    return filename_np_learn_X, filename_df_y_1d, filename_df_y_Nd, filename_df_date_join
 
@@ -1418,16 +1372,16 @@ def get_filenames_LSTM(dataset_name,target_period,profondeur_analyse,symbols_set
 def load_learn_from_files_LSTM(dataset_name,target_period,profondeur_analyse,symbols_set,time_depth,samples_by_class,periods,column_sets):
    #
    filename_np_learn_X = get_dfLearn_filename_LSTM(target_period,profondeur_analyse,symbols_set,time_depth,samples_by_class,periods,column_sets,'np_learn_X')
-   np_learn_X = numpy.load(arbo.get_study_dir(py_dir,dataset_name)+'\\'+filename_np_learn_X)
+   np_learn_X = numpy.load(arbo.get_study_dir(arbo.get_py_dir(),dataset_name)+'\\'+filename_np_learn_X)
    #
    filename_df_y_1d = get_dfLearn_filename_LSTM(target_period,profondeur_analyse,symbols_set,time_depth,samples_by_class,periods,column_sets,'df_y_1d')
-   df_y_1d = pandas.read_csv(arbo.get_study_dir(py_dir,dataset_name)+'\\'+filename_df_y_1d, index_col=0)
+   df_y_1d = pandas.read_csv(arbo.get_study_dir(arbo.get_py_dir(),dataset_name)+'\\'+filename_df_y_1d, index_col=0)
    #
    filename_df_y_Nd = get_dfLearn_filename_LSTM(target_period,profondeur_analyse,symbols_set,time_depth,samples_by_class,periods,column_sets,'df_y_Nd')
-   df_y_Nd = pandas.read_csv(arbo.get_study_dir(py_dir,dataset_name)+'\\'+filename_df_y_Nd, index_col=0)
+   df_y_Nd = pandas.read_csv(arbo.get_study_dir(arbo.get_py_dir(),dataset_name)+'\\'+filename_df_y_Nd, index_col=0)
    #
    filename_df_date_join = get_dfLearn_filename_LSTM(target_period,profondeur_analyse,symbols_set,time_depth,samples_by_class,periods,column_sets,'df_date_join')
-   df_date_join = pandas.read_csv(arbo.get_study_dir(py_dir,dataset_name)+'\\'+filename_df_date_join, index_col=0)
+   df_date_join = pandas.read_csv(arbo.get_study_dir(arbo.get_py_dir(),dataset_name)+'\\'+filename_df_date_join, index_col=0)
    #
    return np_learn_X, df_y_1d, df_y_Nd, df_date_join
 
@@ -1435,16 +1389,16 @@ def load_learn_from_files_LSTM(dataset_name,target_period,profondeur_analyse,sym
 def load_learn_from_fileset_LSTM(dataset_name,fileset):
    #
    filename_np_learn_X = fileset[0]
-   np_learn_X = numpy.load(arbo.get_study_dir(py_dir,dataset_name)+'\\'+filename_np_learn_X)
+   np_learn_X = numpy.load(arbo.get_study_dir(arbo.get_py_dir(),dataset_name)+'\\'+filename_np_learn_X)
    #
    filename_df_y_1d = fileset[1]
-   df_y_1d = pandas.read_csv(arbo.get_study_dir(py_dir,dataset_name)+'\\'+filename_df_y_1d, index_col=0)
+   df_y_1d = pandas.read_csv(arbo.get_study_dir(arbo.get_py_dir(),dataset_name)+'\\'+filename_df_y_1d, index_col=0)
    #
    filename_df_y_Nd = fileset[2]
-   df_y_Nd = pandas.read_csv(arbo.get_study_dir(py_dir,dataset_name)+'\\'+filename_df_y_Nd, index_col=0)
+   df_y_Nd = pandas.read_csv(arbo.get_study_dir(arbo.get_py_dir(),dataset_name)+'\\'+filename_df_y_Nd, index_col=0)
    #
    filename_df_date_join = fileset[3]
-   df_date_join = pandas.read_csv(arbo.get_study_dir(py_dir,dataset_name)+'\\'+filename_df_date_join, index_col=0)
+   df_date_join = pandas.read_csv(arbo.get_study_dir(arbo.get_py_dir(),dataset_name)+'\\'+filename_df_date_join, index_col=0)
    #
    return np_learn_X, df_y_1d, df_y_Nd, df_date_join
 
@@ -1466,7 +1420,7 @@ def generate_LSTM(filenames_list_LSTM,dataset_name,target_period,all_df_bigs,big
          samples_by_class,
          periods,
          column_sets,'np_learn_X')
-   check_exists_filename_np_learn_X = check_file_exists(arbo.get_study_dir(py_dir,dataset_name)+'\\'+filename_to_check,'npy')
+   check_exists_filename_np_learn_X = check_file_exists(arbo.get_study_dir(arbo.get_py_dir(),dataset_name)+'\\'+filename_to_check,'npy')
    if(check_exists_filename_np_learn_X==True):
       print("Fichier déjà existant")
       #

@@ -1,20 +1,6 @@
-import os
-import sys
-
-
-cur_dir = os.getcwd()
-if cur_dir == 'C:\\Users\\T0042310\\MyApp\\miniconda3':
-    sys.path.append('C:\\Users\\T0042310\\Documents\\Perso\\Py\\pythonProject\\test-master')
-    py_dir = 'C:\\Users\\T0042310\\Documents\\Perso\\Py'
-elif cur_dir == 'C:\\Users\\Frédéri\\PycharmProjects\\pythonProject':
-    py_dir = 'C:\\Users\\Frédéri\\Py'
-else:
-    sys.path.append('E:\\Py\\pythonProject')
-    sys.path.append('C:\\Program Files\\NVIDIA GPU Computing Toolkit\\cuDNN\\cuDNN v7.6.5 for CUDA 10.1\\bin')
-    sys.path.append('C:\\Program Files\\NVIDIA GPU Computing Toolkit\\cuDNN\\cuDNN v8.0.3.33 for CUDA 10.1\\bin')
-    sys.path.append('C:\\Program Files\\NVIDIA GPU Computing Toolkit\\CUDA\\v10.1\\bin')
-    py_dir = 'E:\\Py'
-
+#
+# Copyright (c) 2020-2021 by Frederi CATRIER - All rights reserved.
+#
 
 learning_data_base_template = {
     'np_X': None,
@@ -31,24 +17,24 @@ learning_data_template = {
 
 
 class AtomicLearningData:
-    X = None # shall be set with a numpy.array
-    y_1d = None # shall be set with a pandas.Dataframe with a datetime index
-    y_Nd = None # shall be set with a pandas.Dataframe with a datetime index
-    atr = None # shall be set with a pandas.Dataframe with a datetime index
+    X = None  # shall be set with a numpy.array
+    y_1d = None  # shall be set with a pandas.Dataframe with a datetime index
+    y_Nd = None  # shall be set with a pandas.Dataframe with a datetime index
+    atr = None  # shall be set with a pandas.Dataframe with a datetime index
 
 
 class LearningData:
-    train = None # shall be set with a AtomicLearningData object
-    val = None # shall be set with a AtomicLearningData object
-    test = None # shall be set with a AtomicLearningData object
-    test1 = None # shall be set with a AtomicLearningData object
-    test2 = None # shall be set with a AtomicLearningData object
+    train = None  # shall be set with a AtomicLearningData object
+    val = None  # shall be set with a AtomicLearningData object
+    test = None  # shall be set with a AtomicLearningData object
+    test1 = None  # shall be set with a AtomicLearningData object
+    test2 = None  # shall be set with a AtomicLearningData object
 
 
 class TrainDataGeneratorBase:
     raw_data = None  # = output of loader
     raw_data_with_target = None  # = output of trigger
-    learning_data = None # = output of norm data ? Shall be set with a AtomicLearningData object
+    learning_data = None  # = output of norm data ? Shall be set with a AtomicLearningData object
 
     # -------------------------------------------------------------------------
     # Members functions
@@ -79,7 +65,6 @@ class TrainDataGeneratorBase:
         raise NotImplementedError("Pure method to be implemented in child class")
 
 
-
 class FCTrainDataGenerator(TrainDataGeneratorBase):
     #
     # Set __df_raw_data from outside this class
@@ -87,10 +72,10 @@ class FCTrainDataGenerator(TrainDataGeneratorBase):
     __dataset_name = None
     __step2_params = None
     __step3_params = None
-    #
+
     def load_compute_raw_data_additional_params(self, dataset_name):
         self.__dataset_name = dataset_name
-    #
+
     def load_compute_raw_data(self):
         #
         import pandas

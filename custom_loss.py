@@ -1,3 +1,6 @@
+#
+# Copyright (c) 2020-2021 by Frederi CATRIER - All rights reserved.
+#
 
 import keras
 import numpy

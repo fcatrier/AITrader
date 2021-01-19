@@ -2,22 +2,7 @@
 # Copyright (c) 2020-2021 by Frederi CATRIER - All rights reserved.
 #
 
-import os
-import sys
-
-
-cur_dir = os.getcwd()
-if cur_dir == 'C:\\Users\\T0042310\\MyApp\\miniconda3':
-    sys.path.append('C:\\Users\\T0042310\\Documents\\Perso\\Py\\pythonProject\\test-master')
-    py_dir = 'C:\\Users\\T0042310\\Documents\\Perso\\Py'
-elif cur_dir == 'C:\\Users\\Frédéri\\PycharmProjects\\pythonProject':
-    py_dir = 'C:\\Users\\Frédéri\\Py'
-else:
-    sys.path.append('E:\\Py\\pythonProject')
-    sys.path.append('C:\\Program Files\\NVIDIA GPU Computing Toolkit\\cuDNN\\cuDNN v7.6.5 for CUDA 10.1\\bin')
-    sys.path.append('C:\\Program Files\\NVIDIA GPU Computing Toolkit\\cuDNN\\cuDNN v8.0.3.33 for CUDA 10.1\\bin')
-    sys.path.append('C:\\Program Files\\NVIDIA GPU Computing Toolkit\\CUDA\\v10.1\\bin')
-    py_dir = 'E:\\Py'
+import learn_evaluate_results
 
 
 class ModelManager:
@@ -90,7 +75,7 @@ class ModelManager:
         # entrée du LSTM
         #
         model.add(keras.layers.LSTM(self.__model_dict['config_GRU_LSTM_units'], return_sequences=True,
-                                    input_shape=(self.__model_dict['nput_timesteps'],
+                                    input_shape=(self.__model_dict['input_timesteps'],
                                                  self.__model_dict['input_features'])))
         model.add(keras.layers.Dropout(self.__model_dict['dropout_rate']))
         #
@@ -187,7 +172,7 @@ class ModelManager:
                             shuffle=False,
                             epochs=self.__model_dict['fit_epochs_max'],
                             callbacks=[callback],
-                            verbose=1,
+                            verbose=0,
                             validation_data=(learning_data['val']['np_X'],
                                              learning_data['val']['df_y_Nd']))
         #
@@ -200,4 +185,10 @@ class ModelManager:
         print("train_accuracy = ", train_accuracy)
         print("val_accuracy   = ", val_accuracy)
         print("---")
-
+        #
+        learning_metrics_template_this_fit = learn_evaluate_results.learning_metrics_template.copy()
+        learning_metrics_template_this_fit['train_loss'] = train_loss
+        learning_metrics_template_this_fit['val_loss'] = val_loss
+        learning_metrics_template_this_fit['train_accuracy'] = train_accuracy
+        learning_metrics_template_this_fit['val_accuracy'] = val_accuracy
+        return learning_metrics_template_this_fit
