@@ -25,15 +25,12 @@
 # imports from this project
 #
 import arbo
-import utils
-
 import learn_evaluate_results
 import learn_history
-
-from model_manager import ModelManager
-
-import step3_dataset_prepare_learning_input_data as step3
 import step2_dataset_prepare_target_data as step2
+import step3_dataset_prepare_learning_input_data as step3
+import utils
+from model_manager import ModelManager
 
 
 def learn(dataset_name, dir_npy, model_manager, learning_data, loops_count=1):
@@ -76,28 +73,6 @@ def learn(dataset_name, dir_npy, model_manager, learning_data, loops_count=1):
             print("train_params : ", train_params)
         #
         model_manager.fit(learning_data)
-        # callback = keras.callbacks.EarlyStopping(monitor='val_accuracy',
-        #                                          patience=_mm_dict['fit_earlystopping_patience'],
-        #                                          restore_best_weights=True)
-        # history = model.fit(learning_data['train']['np_X'],
-        #                     learning_data['train']['df_y_Nd'],
-        #                     _mm_dict['fit_batch_size'],
-        #                     shuffle=False,
-        #                     epochs=_mm_dict['fit_epochs_max'],
-        #                     callbacks=[callback],
-        #                     verbose=1,
-        #                     validation_data=(learning_data['val']['np_X'],
-        #                                      learning_data['val']['df_y_Nd']))
-        # #
-        # train_loss = round(min(history.history['loss']), 3)
-        # val_loss = round(min(history.history['val_loss']), 3)
-        # train_accuracy = round(max(history.history['accuracy']), 2)
-        # val_accuracy = round(max(history.history['val_accuracy']), 2)
-        # print("train_loss     = ", train_loss)
-        # print("val_loss       = ", val_loss)
-        # print("train_accuracy = ", train_accuracy)
-        # print("val_accuracy   = ", val_accuracy)
-        # print("---")
         #
         post_learning_metrics_val   = learn_evaluate_results.post_learning_metrics(model, learning_data, 'val')
         post_learning_metrics_test1 = learn_evaluate_results.post_learning_metrics(model, learning_data, 'test1')
