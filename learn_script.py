@@ -137,7 +137,7 @@ def execute(dataset_name, dir_npy):
             _mm_dict = model_manager.get_properties()
             #
             _mm_dict['model_architecture'] = 'Conv1D_Dense'
-            _mm_dict['conv1D_block1_MaxPooling1D_pool_size'] = 2
+            _mm_dict['conv1D_block1_MaxPooling1D_pool_size'] = 0
             _mm_dict['config_GRU_LSTM_units'] = 128
             _mm_dict['config_Dense_units'] = 96
             _mm_dict['dropout_rate'] = 0.5
@@ -156,14 +156,16 @@ def execute(dataset_name, dir_npy):
                     if conv1D_block1_kernel_size >= step3_time_depth:
                         continue
                     #
-                    #
-                    # Model and learning parameters : modified by this loop
-                    #
-                    _mm_dict = model_manager.get_properties()
-                    #
-                    _mm_dict['conv1D_block1_filters'] = conv1D_block1_filters
-                    _mm_dict['conv1D_block1_kernel_size'] = conv1D_block1_kernel_size
-                    #
-                    model_manager.update_properties(_mm_dict)
-                    #
-                    learn(dataset_name, dir_npy, model_manager, learning_data)
+                    for config_Dense_units in (13, 21, 34, 55, 89):
+                        #
+                        # Model and learning parameters : modified by this loop
+                        #
+                        _mm_dict = model_manager.get_properties()
+                        #
+                        _mm_dict['conv1D_block1_filters'] = conv1D_block1_filters
+                        _mm_dict['conv1D_block1_kernel_size'] = conv1D_block1_kernel_size
+                        _mm_dict['config_Dense_units'] = config_Dense_units
+                        #
+                        model_manager.update_properties(_mm_dict)
+                        #
+                        learn(dataset_name, dir_npy, model_manager, learning_data)

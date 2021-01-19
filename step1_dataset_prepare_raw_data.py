@@ -32,23 +32,6 @@ Mais attention ce tri n'est pas adapté à l'extaction : ne pas oublier de l'inv
 
 
 """
-#python
-
-import os
-import sys
-
-# cur_dir = os.getcwd()
-# if cur_dir == 'C:\\Users\\T0042310\\MyApp\\miniconda3':
-#     sys.path.append('C:\\Users\\T0042310\\Documents\\Perso\\Py\\pythonProject\\test-master')
-#     py_dir = 'C:\\Users\\T0042310\\Documents\\Perso\\Py'
-# elif cur_dir == 'C:\\Users\\Frédéri\\PycharmProjects\\pythonProject':
-#     py_dir = 'C:\\Users\\Frédéri\\Py'
-# else:
-#     sys.path.append('E:\\Py\\pythonProject')
-#     sys.path.append('C:\\Program Files\\NVIDIA GPU Computing Toolkit\\cuDNN\\cuDNN v7.6.5 for CUDA 10.1\\bin')
-#     sys.path.append('C:\\Program Files\\NVIDIA GPU Computing Toolkit\\cuDNN\\cuDNN v8.0.3.33 for CUDA 10.1\\bin')
-#     sys.path.append('C:\\Program Files\\NVIDIA GPU Computing Toolkit\\CUDA\\v10.1\\bin')
-#     py_dir = 'E:\\Py'
 
 import arbo
 import pandas
@@ -75,7 +58,6 @@ def read_data(data_dir):
    df['minute']    = [(df['DateTime'][i].minute    ) for i in range(0, len(df))]
    df['time_slot'] = ( df['hour'] * 4 + df['minute'] // 15 ) / 100.0
    df.head()
-   df.dtypes
    return df
 
 def step_from_period(period):
@@ -165,18 +147,18 @@ def add_pivot(df,period_pivot):
    return df
 
 def class_vs_pivot(df,period_pivot):
-   df['class_vs_pivot_'+period_pivot]= \
-      ( \
-         ( \
-            (+4) * (                                           (df['Close']>df['R3_'   +period_pivot]) ) + \
-            (+3) * ( (df['Close']<df['R3_'   +period_pivot]) & (df['Close']>df['R2_'   +period_pivot]) ) + \
-            (+2) * ( (df['Close']<df['R2_'   +period_pivot]) & (df['Close']>df['R1_'   +period_pivot]) ) + \
-            (+1) * ( (df['Close']<df['R1_'   +period_pivot]) & (df['Close']>df['Pivot_'+period_pivot]) ) + \
-            (-1) * ( (df['Close']<df['Pivot_'+period_pivot]) & (df['Close']>df['S1_'   +period_pivot]) ) + \
-            (-2) * ( (df['Close']<df['S1_'   +period_pivot]) & (df['Close']>df['S2_'   +period_pivot]) ) + \
-            (-3) * ( (df['Close']<df['S2_'   +period_pivot]) & (df['Close']>df['S3_'   +period_pivot]) ) + \
-            (-4) * ( (df['Close']<df['S3_'   +period_pivot])                                         ) \
-         ) \
+   df['class_vs_pivot_'+period_pivot] = \
+      (
+         (
+            (+4) * (                                           (df['Close']>df['R3_'   +period_pivot]) ) +
+            (+3) * ( (df['Close']<df['R3_'   +period_pivot]) & (df['Close']>df['R2_'   +period_pivot]) ) +
+            (+2) * ( (df['Close']<df['R2_'   +period_pivot]) & (df['Close']>df['R1_'   +period_pivot]) ) +
+            (+1) * ( (df['Close']<df['R1_'   +period_pivot]) & (df['Close']>df['Pivot_'+period_pivot]) ) +
+            (-1) * ( (df['Close']<df['Pivot_'+period_pivot]) & (df['Close']>df['S1_'   +period_pivot]) ) +
+            (-2) * ( (df['Close']<df['S1_'   +period_pivot]) & (df['Close']>df['S2_'   +period_pivot]) ) +
+            (-3) * ( (df['Close']<df['S2_'   +period_pivot]) & (df['Close']>df['S3_'   +period_pivot]) ) +
+            (-4) * ( (df['Close']<df['S3_'   +period_pivot])                                         )
+         )
       + 4 ) / 8.0
    return df
 
@@ -776,9 +758,9 @@ def prefix_columns(df,symbol,period):
       newCols.append(symbol+'_'+period+'_'+oldCols[i])
    return newCols
 
-def create_big(period, \
-               copy_Usa500,copy_UsaInd,copy_UsaTec,copy_Ger30,\
-               copy_EURUSD, copy_USDJPY, \
+def create_big(period,
+               copy_Usa500,copy_UsaInd,copy_UsaTec,copy_Ger30,
+               copy_EURUSD, copy_USDJPY,
                copy_GOLD, copy_LCrude):   #, copy_Brent):
    #
    newCols = prefix_columns(copy_Usa500,'Usa500',period)
@@ -800,8 +782,8 @@ def create_big(period, \
    # newCols = prefix_columns(copy_Brent,'Brent',period)
    # copy_Brent.columns = newCols
    #
-   big = pandas.concat([copy_Usa500,copy_UsaInd,copy_UsaTec,copy_Ger30,\
-                        copy_EURUSD, copy_USDJPY, \
+   big = pandas.concat([copy_Usa500,copy_UsaInd,copy_UsaTec,copy_Ger30,
+                        copy_EURUSD, copy_USDJPY,
                         copy_GOLD, copy_LCrude],join='inner',axis=1)
    # ajout de la colonne DateTime (qui est masquée mais présente en tant qu'index)
    big['DateTime'] = big.index
@@ -811,119 +793,74 @@ def load_prepared_data(dataset_name):
    symbol='Usa500'
    #
    Usa500_dfH1 = read_prepared_dataset(get_prepared_dataset_full_filename(dataset_name,symbol,'H1'))
-   Usa500_dfH1
    Usa500_dfM30 = read_prepared_dataset(get_prepared_dataset_full_filename(dataset_name,symbol,'M30'))
-   Usa500_dfM30
    Usa500_dfM15 = read_prepared_dataset(get_prepared_dataset_full_filename(dataset_name,symbol,'M15'))
-   Usa500_dfM15
    Usa500_dfM5 = read_prepared_dataset(get_prepared_dataset_full_filename(dataset_name,symbol,'M5'))
-   Usa500_dfM5
    # Usa500_dfM1 = read_prepared_dataset(get_prepared_dataset_full_filename(dataset_name,symbol,'M1'))
-   # Usa500_dfM1
    #
    symbol='UsaInd'
    #
    UsaInd_dfH1 = read_prepared_dataset(get_prepared_dataset_full_filename(dataset_name,symbol,'H1'))
-   UsaInd_dfH1
    UsaInd_dfM30 = read_prepared_dataset(get_prepared_dataset_full_filename(dataset_name,symbol,'M30'))
-   UsaInd_dfM30
    UsaInd_dfM15 = read_prepared_dataset(get_prepared_dataset_full_filename(dataset_name,symbol,'M15'))
-   UsaInd_dfM15
    UsaInd_dfM5 = read_prepared_dataset(get_prepared_dataset_full_filename(dataset_name,symbol,'M5'))
-   UsaInd_dfM5
    # UsaInd_dfM1 = read_prepared_dataset(get_prepared_dataset_full_filename(dataset_name,symbol,'M1'))
-   # UsaInd_dfM1
    #
    symbol='UsaTec'
    #
    UsaTec_dfH1 = read_prepared_dataset(get_prepared_dataset_full_filename(dataset_name,symbol,'H1'))
-   UsaTec_dfH1
    UsaTec_dfM30 = read_prepared_dataset(get_prepared_dataset_full_filename(dataset_name,symbol,'M30'))
-   UsaTec_dfM30
    UsaTec_dfM15 = read_prepared_dataset(get_prepared_dataset_full_filename(dataset_name,symbol,'M15'))
-   UsaTec_dfM15
    UsaTec_dfM5 = read_prepared_dataset(get_prepared_dataset_full_filename(dataset_name,symbol,'M5'))
-   UsaTec_dfM5
    # UsaTec_dfM1 = read_prepared_dataset(get_prepared_dataset_full_filename(dataset_name,symbol,'M1'))
-   # UsaTec_dfM1
    #
    symbol='Ger30'
    #
    Ger30_dfH1 = read_prepared_dataset(get_prepared_dataset_full_filename(dataset_name,symbol,'H1'))
-   Ger30_dfH1
    Ger30_dfM30 = read_prepared_dataset(get_prepared_dataset_full_filename(dataset_name,symbol,'M30'))
-   Ger30_dfM30
    Ger30_dfM15 = read_prepared_dataset(get_prepared_dataset_full_filename(dataset_name,symbol,'M15'))
-   Ger30_dfM15
    Ger30_dfM5 = read_prepared_dataset(get_prepared_dataset_full_filename(dataset_name,symbol,'M5'))
-   Ger30_dfM5
    # Ger30_dfM1 = read_prepared_dataset(get_prepared_dataset_full_filename(dataset_name,symbol,'M1'))
-   # Ger30_dfM1
    #
    symbol='EURUSD'
    #
    EURUSD_dfH1 = read_prepared_dataset(get_prepared_dataset_full_filename(dataset_name,symbol,'H1'))
-   EURUSD_dfH1
    EURUSD_dfM30 = read_prepared_dataset(get_prepared_dataset_full_filename(dataset_name,symbol,'M30'))
-   EURUSD_dfM30
    EURUSD_dfM15 = read_prepared_dataset(get_prepared_dataset_full_filename(dataset_name,symbol,'M15'))
-   EURUSD_dfM15
    EURUSD_dfM5 = read_prepared_dataset(get_prepared_dataset_full_filename(dataset_name,symbol,'M5'))
-   EURUSD_dfM5
    # EURUSD_dfM1 = read_prepared_dataset(get_prepared_dataset_full_filename(dataset_name,symbol,'M1'))
-   # EURUSD_dfM1
    #
    symbol='USDJPY'
    #
    USDJPY_dfH1 = read_prepared_dataset(get_prepared_dataset_full_filename(dataset_name,symbol,'H1'))
-   USDJPY_dfH1
    USDJPY_dfM30 = read_prepared_dataset(get_prepared_dataset_full_filename(dataset_name,symbol,'M30'))
-   USDJPY_dfM30
    USDJPY_dfM15 = read_prepared_dataset(get_prepared_dataset_full_filename(dataset_name,symbol,'M15'))
-   USDJPY_dfM15
    USDJPY_dfM5 = read_prepared_dataset(get_prepared_dataset_full_filename(dataset_name,symbol,'M5'))
-   USDJPY_dfM5
    # USDJPY_dfM1 = read_prepared_dataset(get_prepared_dataset_full_filename(dataset_name,symbol,'M1'))
-   # USDJPY_dfM1
    #
    symbol='GOLD'
    #
    GOLD_dfH1 = read_prepared_dataset(get_prepared_dataset_full_filename(dataset_name,symbol,'H1'))
-   GOLD_dfH1
    GOLD_dfM30 = read_prepared_dataset(get_prepared_dataset_full_filename(dataset_name,symbol,'M30'))
-   GOLD_dfM30
    GOLD_dfM15 = read_prepared_dataset(get_prepared_dataset_full_filename(dataset_name,symbol,'M15'))
-   GOLD_dfM15
    GOLD_dfM5 = read_prepared_dataset(get_prepared_dataset_full_filename(dataset_name,symbol,'M5'))
-   GOLD_dfM5
    # GOLD_dfM1 = read_prepared_dataset(get_prepared_dataset_full_filename(dataset_name,symbol,'M1'))
-   # GOLD_dfM1
    #
    symbol='LCrude'
    #
    LCrude_dfH1 = read_prepared_dataset(get_prepared_dataset_full_filename(dataset_name,symbol,'H1'))
-   LCrude_dfH1
    LCrude_dfM30 = read_prepared_dataset(get_prepared_dataset_full_filename(dataset_name,symbol,'M30'))
-   LCrude_dfM30
    LCrude_dfM15 = read_prepared_dataset(get_prepared_dataset_full_filename(dataset_name,symbol,'M15'))
-   LCrude_dfM15
    LCrude_dfM5 = read_prepared_dataset(get_prepared_dataset_full_filename(dataset_name,symbol,'M5'))
-   LCrude_dfM5
    # LCrude_dfM1 = read_prepared_dataset(get_prepared_dataset_full_filename(dataset_name,symbol,'M1'))
-   # LCrude_dfM1
    #
    # symbol='Brent'
    # #
    # Brent_dfH1 = read_prepared_dataset(get_prepared_dataset_full_filename(dataset_name,symbol,'H1'))
-   # Brent_dfH1
    # Brent_dfM30 = read_prepared_dataset(get_prepared_dataset_full_filename(dataset_name,symbol,'M30'))
-   # Brent_dfM30
    # Brent_dfM15 = read_prepared_dataset(get_prepared_dataset_full_filename(dataset_name,symbol,'M15'))
-   # Brent_dfM15
    # Brent_dfM5 = read_prepared_dataset(get_prepared_dataset_full_filename(dataset_name,symbol,'M5'))
-   # Brent_dfM5
    # # Brent_dfM1 = read_prepared_dataset(get_prepared_dataset_full_filename(dataset_name,symbol,'M1'))
-   # # Brent_dfM1
    #
    #
    period='H1'
@@ -936,9 +873,9 @@ def load_prepared_data(dataset_name):
    copy_GOLD   = GOLD_dfH1.copy()
    copy_LCrude = LCrude_dfH1.copy()
    # copy_Brent  =  Brent_dfH1.copy()
-   big_H1 = create_big(period, \
-                       copy_Usa500,copy_UsaInd,copy_UsaTec,copy_Ger30,\
-                       copy_EURUSD, copy_USDJPY, \
+   big_H1 = create_big(period,
+                       copy_Usa500,copy_UsaInd,copy_UsaTec,copy_Ger30,
+                       copy_EURUSD, copy_USDJPY,
                        copy_GOLD, copy_LCrude)#, copy_Brent)
    #
    period='M30'
@@ -951,9 +888,9 @@ def load_prepared_data(dataset_name):
    copy_GOLD   = GOLD_dfM30.copy()
    copy_LCrude = LCrude_dfM30.copy()
    # copy_Brent  =  Brent_dfM30.copy()
-   big_M30 = create_big(period, \
-                        copy_Usa500,copy_UsaInd,copy_UsaTec,copy_Ger30,\
-                        copy_EURUSD, copy_USDJPY, \
+   big_M30 = create_big(period,
+                        copy_Usa500,copy_UsaInd,copy_UsaTec,copy_Ger30,
+                        copy_EURUSD, copy_USDJPY,
                         copy_GOLD, copy_LCrude)#, copy_Brent)
    #
    period='M15'
@@ -966,9 +903,9 @@ def load_prepared_data(dataset_name):
    copy_GOLD   = GOLD_dfM15.copy()
    copy_LCrude = LCrude_dfM15.copy()
    # copy_Brent  =  Brent_dfM15.copy()
-   big_M15 = create_big(period, \
-                        copy_Usa500,copy_UsaInd,copy_UsaTec,copy_Ger30,\
-                        copy_EURUSD, copy_USDJPY, \
+   big_M15 = create_big(period,
+                        copy_Usa500,copy_UsaInd,copy_UsaTec,copy_Ger30,
+                        copy_EURUSD, copy_USDJPY,
                         copy_GOLD, copy_LCrude)#, copy_Brent)
    #
    period='M5'
@@ -981,9 +918,9 @@ def load_prepared_data(dataset_name):
    copy_GOLD   = GOLD_dfM5.copy()
    copy_LCrude = LCrude_dfM5.copy()
    # copy_Brent  =  Brent_dfM5.copy()
-   big_M5 = create_big(period, \
-                       copy_Usa500,copy_UsaInd,copy_UsaTec,copy_Ger30,\
-                       copy_EURUSD, copy_USDJPY, \
+   big_M5 = create_big(period,
+                       copy_Usa500,copy_UsaInd,copy_UsaTec,copy_Ger30,
+                       copy_EURUSD, copy_USDJPY,
                        copy_GOLD, copy_LCrude)#, copy_Brent)
    #
    # period='M1'
