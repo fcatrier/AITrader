@@ -8,85 +8,35 @@ import learn_history
 import step2_dataset_prepare_target_data as step2
 import step3_dataset_prepare_learning_input_data as step3
 import utils
-from model_manager import ModelManager
-
-
-def learn(dataset_name, dir_npy, model_manager, learning_data, loops_count=1):
-    #
-    npy_path = arbo.npy_path(dataset_name, dir_npy)
-    idx_run_loop = learn_history.new_npy_idx(npy_path)
-    #
-    # Setting of last model manager properties that need information about data generation
-    #
-    input_features = learning_data['train']['np_X'].shape[2]
-    input_timesteps = learning_data['train']['np_X'].shape[1]
-    output_shape = learning_data['train']['df_y_Nd'].shape[1]
-    train_params = learning_data['train']['np_X'].shape[0]
-    print("input_features=", input_features)
-    print("input_timesteps=", input_timesteps)
-    print("output_shape=", output_shape)
-    print("train_params=", train_params)
-    #
-    _mm_dict = model_manager.get_properties()
-    #
-    _mm_dict['input_features'] = input_features
-    _mm_dict['input_timesteps'] = input_timesteps
-    _mm_dict['output_shape'] = output_shape
-    _mm_dict['train_params'] = train_params
-    #
-    model_manager.update_properties(_mm_dict)
-    #
-    for i in range(0, loops_count):
-        print("")
-        print("-----------------------------------------------------------")
-        print("Repeat #", i + 1, " /", loops_count)
-        print("-----------------------------------------------------------")
-        print("")
-        #
-        model = model_manager.create_compile_model()
-        #
-        if i == 0:  # affiché uniquement au premier passage pour désaturer l'affichage
-            print(model.summary())
-            print("model.count_params()=", model.count_params())
-            print("train_params : ", train_params)
-        #
-        learning_metrics_this_fit = model_manager.fit(learning_data)
-        #
-
-        # calcul des métriques uniquement si l'apprentissage a été un minimum concluant
-        post_learning_metrics_val = None
-        post_learning_metrics_test1 = None
-        post_learning_metrics_test2 = None
-        if learning_metrics_this_fit['val_accuracy'] >= 0.5:
-            post_learning_metrics_val   = learn_evaluate_results.post_learning_metrics(model, learning_data, 'val')
-            post_learning_metrics_test1 = learn_evaluate_results.post_learning_metrics(model, learning_data, 'test1')
-            post_learning_metrics_test2 = learn_evaluate_results.post_learning_metrics(model, learning_data, 'test2')
-        #
-        path = arbo.npy_path_with_prefix(dataset_name, dir_npy, idx_run_loop)
-        #
-        utils.dictionary_save(path, model_manager.get_properties())
-        utils.dictionary_save(path, step2.step2_params)
-        utils.dictionary_save(path, step3.step3_params)
-        if learning_metrics_this_fit['val_accuracy'] >= 0.5:
-            utils.dictionary_save(path, post_learning_metrics_val,   'val')
-            utils.dictionary_save(path, post_learning_metrics_test1, 'train1')
-            utils.dictionary_save(path, post_learning_metrics_test2, 'train2')
-        #
-        idx_run_loop += 1
-        #
-        del model
-    #
 
 
 #
-# Ici point d'entrée pour ajuster les paramètres ou coder les boucles de variations
+# entry point
 #
 def execute(dataset_name, dir_npy):
     #
     from train_data_generator import FCTrainDataGenerator
-    fcg = FCTrainDataGenerator()
-    fcg.load_compute_raw_data_additional_params(dataset_name)
-    fcg.load_compute_raw_data()
+    data_generator = FCTrainDataGenerator()
+    #
+    from model_manager import ModelManager
+    model_manager = ModelManager()
+    #
+    loop_step_raw_data(dataset_name, dir_npy, data_generator, model_manager)
+
+
+def loop_step_raw_data(dataset_name, dir_npy, data_generator, model_manager):
+    #
+    data_generator.load_compute_raw_data_additional_params(dataset_name)
+    data_generator.load_compute_raw_data()
+    #
+    # (iterate on) next step
+    #
+    loop_step_target(dataset_name, dir_npy, data_generator, model_manager):
+
+
+def loop_step_target(dataset_name, dir_npy, data_generator, model_manager):
+    #
+    # step2 parameters : unchanged during loop
     #
     step2.step2_params['step2_target_class_col_name'] = 'target_class'
     step2.step2_params['step2_profondeur_analyse'] = 3
@@ -102,10 +52,15 @@ def execute(dataset_name, dir_npy):
     step2.step2_params['step2_ratio_coupure'] = 1.1
     step2.step2_params['step2_use_ATR'] = True
     #
-    fcg.compute_target_additional_params(step2.step2_params)
-    fcg.compute_target()
+    data_generator.compute_target_additional_params(step2.step2_params)
+    data_generator.compute_target()
     #
-    model_manager = ModelManager()
+    # (iterate on) next step
+    #
+    loop_learning_data(dataset_name, dir_npy, data_generator, model_manager):
+
+
+def loop_learning_data(dataset_name, dir_npy, data_generator, model_manager):
     #
     # step3 parameters : unchanged during loop
     #
@@ -115,6 +70,9 @@ def execute(dataset_name, dir_npy):
         'UsaInd_M15_pRSI_3', 'UsaInd_M15_pRSI_5', 'UsaInd_M15_pRSI_8', 'UsaInd_M15_pRSI_13', 'UsaInd_M15_pRSI_21']
     step3.step3_params['step3_tests_by_class'] = 66
     step3.step3_params['step3_idx_start'] = 0  # may be step3_idx_start = int(random.random()*1000)
+    #
+    # step3 parameters : modified during loop + (iterate on) next step
+    #
     #
     for step3_time_depth in (2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233):
         for step3_samples_by_class in (330, 660):    # (330, 660, 990, 1320, 1650, 1980):
@@ -126,46 +84,97 @@ def execute(dataset_name, dir_npy):
             step3.step3_params['step3_samples_by_class'] = step3_samples_by_class
             #
             try:
-                fcg.compute_learning_data_GRU_LSTM_Conv1D_additional_params(step3.step3_params)
-                learning_data = fcg.compute_learning_data_GRU_LSTM_Conv1D()
+                data_generator.compute_learning_data_GRU_LSTM_Conv1D_additional_params(step3.step3_params)
+                learning_data = data_generator.compute_learning_data_GRU_LSTM_Conv1D()
+                #
+                # Setting of last model manager properties provided by data generation
+                model_manager.update_properties_from_learning_data(self, learning_data)
+                #
             except:
-                print("fcg.create_step3_data failed. STOP")
+                print("data_generator.create_step3_data failed. STOP")
                 return
             #
-            # Model and learning parameters : unchanged during loop
+            loop_model(dataset_name, dir_npy, data_generator, model_manager)
+
+
+def loop_model(dataset_name, dir_npy, data_generator, model_manager):
+    #
+    # Model and learning parameters : unchanged during loop
+    #
+    mm_dict = model_manager.get_properties()
+    #
+    mm_dict['model_architecture'] = 'Conv1D_Dense'
+    mm_dict['conv1D_block1_MaxPooling1D_pool_size'] = 0
+    mm_dict['config_GRU_LSTM_units'] = 128
+    mm_dict['config_Dense_units'] = 96
+    mm_dict['dropout_rate'] = 0.5
+    mm_dict['optimizer_name'] = 'adam'
+    mm_dict['optimizer_modif_learning_rate'] = 0.75
+    #
+    mm_dict['fit_batch_size'] = 32
+    mm_dict['fit_epochs_max'] = 500
+    mm_dict['fit_earlystopping_patience'] = 100
+    #
+    model_manager.update_properties(mm_dict)
+    #
+    #
+    # Model and learning parameters : unchanged during loop
+    #
+    for conv1D_block1_filters in (21, 55, 89, 144, 233, 377, 610, 987):
+        for conv1D_block1_kernel_size in (2, 3, 5, 8):
             #
-            _mm_dict = model_manager.get_properties()
+            if conv1D_block1_kernel_size >= step3_time_depth:
+                continue
             #
-            _mm_dict['model_architecture'] = 'Conv1D_Dense'
-            _mm_dict['conv1D_block1_MaxPooling1D_pool_size'] = 0
-            _mm_dict['config_GRU_LSTM_units'] = 128
-            _mm_dict['config_Dense_units'] = 96
-            _mm_dict['dropout_rate'] = 0.5
-            _mm_dict['optimizer_name'] = 'adam'
-            _mm_dict['optimizer_modif_learning_rate'] = 0.75
-            #
-            _mm_dict['fit_batch_size'] = 32
-            _mm_dict['fit_epochs_max'] = 500
-            _mm_dict['fit_earlystopping_patience'] = 100
-            #
-            model_manager.update_properties(_mm_dict)
-            #
-            for conv1D_block1_filters in (21, 55, 89, 144, 233, 377, 610, 987):
-                for conv1D_block1_kernel_size in (2, 3, 5, 8):
-                    #
-                    if conv1D_block1_kernel_size >= step3_time_depth:
-                        continue
-                    #
-                    for config_Dense_units in (13, 21, 34, 55, 89):
-                        #
-                        # Model and learning parameters : modified by this loop
-                        #
-                        _mm_dict = model_manager.get_properties()
-                        #
-                        _mm_dict['conv1D_block1_filters'] = conv1D_block1_filters
-                        _mm_dict['conv1D_block1_kernel_size'] = conv1D_block1_kernel_size
-                        _mm_dict['config_Dense_units'] = config_Dense_units
-                        #
-                        model_manager.update_properties(_mm_dict)
-                        #
-                        learn(dataset_name, dir_npy, model_manager, learning_data)
+            for config_Dense_units in (13, 21, 34, 55, 89):
+                #
+                # Model and learning parameters : modified by this loop
+                #
+                mm_dict = model_manager.get_properties()
+                #
+                mm_dict['conv1D_block1_filters'] = conv1D_block1_filters
+                mm_dict['conv1D_block1_kernel_size'] = conv1D_block1_kernel_size
+                mm_dict['config_Dense_units'] = config_Dense_units
+                #
+                model_manager.update_properties(mm_dict)
+                #
+                learn(dataset_name, dir_npy, model_manager, learning_data)
+
+
+def learn(dataset_name, dir_npy, model_manager, learning_data, loops_count=1):
+    #
+    npy_path = arbo.npy_path(dataset_name, dir_npy)
+    idx_run_loop = learn_history.new_npy_idx(npy_path)
+    npy_path_with_prefix = arbo.npy_path_with_prefix(dataset_name, dir_npy, idx_run_loop)
+    #
+    for i in range(0, loops_count):
+        #
+        print("")
+        print("-----------------------------------------------------------")
+        print("Repeat #", i + 1, " /", loops_count)
+        print("-----------------------------------------------------------")
+        print("")
+        #
+        model = model_manager.create_compile_model()
+        #
+        if i == 0:  # affiché uniquement au premier passage pour désaturer l'affichage
+            model_manager.display_model_info(model)
+        #
+        learning_metrics_this_fit = model_manager.fit(learning_data)
+        #
+        utils.dictionary_save(npy_path_with_prefix, step2.step2_params)
+        utils.dictionary_save(npy_path_with_prefix, step3.step3_params)
+        utils.dictionary_save(npy_path_with_prefix, model_manager.get_properties())
+        utils.dictionary_save(npy_path_with_prefix, learning_metrics_this_fit)
+        #
+        # calcul et sauvagarde des métriques post apprentissage uniquement si
+        #  l'apprentissage a été un minimum concluant
+        #
+        if learning_metrics_this_fit['val_accuracy'] >= 0.5:
+            for part_of_dataset in ('val', 'test1', 'test2'):
+                post_learning_metrics = learn_evaluate_results.post_learning_metrics(model, learning_data, part_of_dataset)
+                utils.dictionary_save(npy_path_with_prefix, post_learning_metrics, part_of_dataset)
+        #
+        idx_run_loop += 1
+        #
+        del model

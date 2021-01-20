@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2020 by Frederi CATRIER - All rights reserved.
+# Copyright (c) 2020-2021 by Frederi CATRIER - All rights reserved.
 #
 
 # -----------------------------------------------------------------------------
@@ -13,12 +13,21 @@ from sklearn.metrics import confusion_matrix
 import step2_dataset_prepare_target_data as step2
 
 
-learning_metrics_template = {'train_loss': None, 'val_loss': None, 'train_accuracy': None, 'val_accuracy': None}
+learning_metrics_dict = {
+    'train_loss': None,
+    'val_loss': None,
+    'train_accuracy': None,
+    'val_accuracy': None}
 
-post_learning_metrics_template = {'acc': None, 'res_eval_result_atr': None, 'cm': None, 'pc_resultat': None}
+
+post_learning_metrics_dict = {
+    'acc': None,
+    'res_eval_result_atr': None,
+    'cm': None,
+    'pc_resultat': None}
 
 
-obsolete_metrics_for_backward_compatibility = {
+obsolete_metrics_for_backward_compatibility_dict = {
     'model_dropout_rate': None,
     'model_fit_batch_size': None,
     'model_fit_earlystopping_patience': None,
@@ -70,7 +79,7 @@ def post_learning_metrics(model, learning_data, train_val_test):
     cm_metrics(cm)
     print("---")
     #
-    result = post_learning_metrics_template.copy()
+    result = post_learning_metrics_dict.copy()
     result['acc'] = acc
     result['res_eval_result_atr'] = res_eval_result_atr
     result['cm'] = cm

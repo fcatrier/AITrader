@@ -44,17 +44,17 @@ def get_all_params():
     for param in utils.dict_get_param_list(_modelManager.get_properties()):
         all_params.append(param)
     #
-    for metric in utils.dict_get_param_list(learn_evaluate_results.learning_metrics_template):
+    for metric in utils.dict_get_param_list(learn_evaluate_results.learning_metrics_dict):
         all_params.append(metric)
     #
-    for base_params in utils.dict_get_param_list(learn_evaluate_results.post_learning_metrics_template):
+    for base_params in utils.dict_get_param_list(learn_evaluate_results.post_learning_metrics_dict):
         for postfix in ('val', 'test1', 'test2'):
             current = base_params
             current += '_'
             current += postfix
             all_params.append(current)
     #
-    for obsolete_metrics in utils.dict_get_param_list(learn_evaluate_results.obsolete_metrics_for_backward_compatibility):
+    for obsolete_metrics in utils.dict_get_param_list(learn_evaluate_results.obsolete_metrics_for_backward_compatibility_dict):
         all_params.append(obsolete_metrics)
     #
     return all_params
