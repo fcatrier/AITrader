@@ -16,22 +16,23 @@ else:
     sys.path.append('E:\\Py\\AITrader')
     py_dir = 'E:\\Py'
 
+
 import learn_script
 
 
 _dataset_name = 'work'
 _dir_npy = '\\npy_current'
 
-# if __name__ == '__main__':
-    # learn_script.execute(_dataset_name, _dir_npy)
-
-
-import arbo
-import learn_history
-
 if __name__ == '__main__':
-    npy_path = arbo.get_study_dir(py_dir, _dataset_name) + _dir_npy
-    df = learn_history.npy_results(npy_path)
-    print(df.tail())
+    learn_script.execute(_dataset_name, _dir_npy)
+
+
+# import arbo
+# import learn_history
+#
+# if __name__ == '__main__':
+#     npy_path = arbo.get_study_dir(py_dir, _dataset_name) + _dir_npy
+#     df = learn_history.npy_results(npy_path)
+#     print(df.tail())
 
 
