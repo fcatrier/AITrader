@@ -7,24 +7,8 @@
 # -----------------------------------------------------------------------------
 
 import os
-import sys
-
 import numpy
 import pandas
-
-cur_dir = os.getcwd()
-if cur_dir == 'C:\\Users\\T0042310\\MyApp\\miniconda3':
-    sys.path.append('C:\\Users\\T0042310\\Documents\\Perso\\Py\\pythonProject\\test-master')
-    py_dir = 'C:\\Users\\T0042310\\Documents\\Perso\\Py'
-elif cur_dir == 'C:\\Users\\Frédéri\\PycharmProjects\\pythonProject':
-    py_dir = 'C:\\Users\\Frédéri\\Py'
-else:
-    sys.path.append('E:\\Py\\pythonProject')
-    sys.path.append('C:\\Program Files\\NVIDIA GPU Computing Toolkit\\cuDNN\\cuDNN v7.6.5 for CUDA 10.1\\bin')
-    sys.path.append('C:\\Program Files\\NVIDIA GPU Computing Toolkit\\cuDNN\\cuDNN v8.0.3.33 for CUDA 10.1\\bin')
-    sys.path.append('C:\\Program Files\\NVIDIA GPU Computing Toolkit\\CUDA\\v10.1\\bin')
-    py_dir = 'E:\\Py'
-
 
 import step2_dataset_prepare_target_data as step2
 import step3_dataset_prepare_learning_input_data as step3
@@ -60,17 +44,17 @@ def get_all_params():
     for param in utils.dict_get_param_list(_modelManager.get_properties()):
         all_params.append(param)
     #
-    for metric in utils.dict_get_param_list(learn_evaluate_results.learning_metrics_template):
+    for metric in utils.dict_get_param_list(learn_evaluate_results.learning_metrics_dict):
         all_params.append(metric)
     #
-    for base_params in utils.dict_get_param_list(learn_evaluate_results.post_learning_metrics_template):
-        for postfix in('val','test1','test2'):
+    for base_params in utils.dict_get_param_list(learn_evaluate_results.post_learning_metrics_dict):
+        for postfix in ('val', 'test1', 'test2'):
             current = base_params
             current += '_'
             current += postfix
             all_params.append(current)
     #
-    for obsolete_metrics in utils.dict_get_param_list(learn_evaluate_results.obsolete_metrics_for_backward_compatibility):
+    for obsolete_metrics in utils.dict_get_param_list(learn_evaluate_results.obsolete_metrics_for_backward_compatibility_dict):
         all_params.append(obsolete_metrics)
     #
     return all_params
