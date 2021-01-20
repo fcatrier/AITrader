@@ -21,6 +21,7 @@ class ModelsCatalog:
         #
         return model
 
+    @staticmethod
     def __create_model_Dense_Dense(model_dict):
         #
         import keras
@@ -43,6 +44,7 @@ class ModelsCatalog:
         model.add(keras.layers.Dense(model_dict['output_shape'], activation='softmax'))
         return model
 
+    @staticmethod
     def __create_model_LSTM_Dense(model_dict):
         #
         import keras
@@ -69,6 +71,7 @@ class ModelsCatalog:
         model.add(keras.layers.Dense(model_dict['output_shape'], activation='softmax'))
         return model
 
+    @staticmethod
     def __create_model_Conv1D_Dense(model_dict):
         #
         import keras
@@ -100,4 +103,3 @@ class ModelsCatalog:
         #
         model.add(keras.layers.Dense(model_dict['output_shape'], activation='softmax'))
         return model
-

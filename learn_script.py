@@ -31,7 +31,7 @@ def loop_step_raw_data(dataset_name, dir_npy, data_generator, model_manager):
     #
     # (iterate on) next step
     #
-    loop_step_target(dataset_name, dir_npy, data_generator, model_manager):
+    loop_step_target(dataset_name, dir_npy, data_generator, model_manager)
 
 
 def loop_step_target(dataset_name, dir_npy, data_generator, model_manager):
@@ -57,7 +57,7 @@ def loop_step_target(dataset_name, dir_npy, data_generator, model_manager):
     #
     # (iterate on) next step
     #
-    loop_learning_data(dataset_name, dir_npy, data_generator, model_manager):
+    loop_learning_data(dataset_name, dir_npy, data_generator, model_manager)
 
 
 def loop_learning_data(dataset_name, dir_npy, data_generator, model_manager):
@@ -87,16 +87,16 @@ def loop_learning_data(dataset_name, dir_npy, data_generator, model_manager):
                 learning_data = data_generator.compute_learning_data_GRU_LSTM_Conv1D()
                 #
                 # Setting of last model manager properties provided by data generation
-                model_manager.update_properties_from_learning_data(self, learning_data)
+                model_manager.update_properties_from_learning_data(learning_data)
                 #
             except:
                 print("data_generator.create_step3_data failed. STOP")
                 return
             #
-            loop_model(dataset_name, dir_npy, data_generator, model_manager)
+            loop_model(dataset_name, dir_npy, model_manager, learning_data)
 
 
-def loop_model(dataset_name, dir_npy, data_generator, model_manager):
+def loop_model(dataset_name, dir_npy, model_manager, learning_data):
     #
     # Model and learning parameters : unchanged during loop
     #
@@ -122,7 +122,7 @@ def loop_model(dataset_name, dir_npy, data_generator, model_manager):
     for conv1D_block1_filters in (21, 55, 89, 144, 233, 377, 610, 987):
         for conv1D_block1_kernel_size in (2, 3, 5, 8):
             #
-            if conv1D_block1_kernel_size >= step3_time_depth:
+            if conv1D_block1_kernel_size >= step3.step3_params['step3_time_depth']:
                 continue
             #
             for config_Dense_units in (13, 21, 34, 55, 89):
@@ -171,7 +171,9 @@ def learn(dataset_name, dir_npy, model_manager, learning_data, loops_count=1):
         #
         if learning_metrics_this_fit['val_accuracy'] >= 0.5:
             for part_of_dataset in ('val', 'test1', 'test2'):
-                post_learning_metrics = learn_evaluate_results.post_learning_metrics(model, learning_data, part_of_dataset)
+                post_learning_metrics = learn_evaluate_results.post_learning_metrics(model,
+                                                                                     learning_data,
+                                                                                     part_of_dataset)
                 utils.dictionary_save(npy_path_with_prefix, post_learning_metrics, part_of_dataset)
         #
         idx_run_loop += 1

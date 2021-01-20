@@ -77,7 +77,7 @@ class ModelManager:
     def create_compile_model(self):
         #
         models_catalog = ModelsCatalog()
-        model = models_catalog.create_model(model_dict)
+        model = models_catalog.create_model(self.__model_dict)
         #
         model.compile(optimizer=self.__create_optimizer(),
                       loss='categorical_crossentropy',
