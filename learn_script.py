@@ -73,7 +73,6 @@ def loop_learning_data(dataset_name, dir_npy, data_generator, model_manager):
     #
     # step3 parameters : modified during loop + (iterate on) next step
     #
-    #
     for step3_time_depth in (2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233):
         for step3_samples_by_class in (330, 660):    # (330, 660, 990, 1320, 1650, 1980):
             #
@@ -128,7 +127,7 @@ def loop_model(dataset_name, dir_npy, data_generator, model_manager):
             #
             for config_Dense_units in (13, 21, 34, 55, 89):
                 #
-                # Model and learning parameters : modified by this loop
+                # Model and learning parameters modified during loop + (iterate on) next step
                 #
                 mm_dict = model_manager.get_properties()
                 #
