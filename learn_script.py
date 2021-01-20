@@ -50,14 +50,14 @@ def learn(dataset_name, dir_npy, model_manager, learning_data, loops_count=1):
             print("model.count_params()=", model.count_params())
             print("train_params : ", train_params)
         #
-        learning_metrics_template_this_fit = model_manager.fit(learning_data)
+        learning_metrics_this_fit = model_manager.fit(learning_data)
         #
 
         # calcul des métriques uniquement si l'apprentissage a été un minimum concluant
         post_learning_metrics_val = None
         post_learning_metrics_test1 = None
         post_learning_metrics_test2 = None
-        if learning_metrics_template_this_fit['val_accuracy'] >= 0.5:
+        if learning_metrics_this_fit['val_accuracy'] >= 0.5:
             post_learning_metrics_val   = learn_evaluate_results.post_learning_metrics(model, learning_data, 'val')
             post_learning_metrics_test1 = learn_evaluate_results.post_learning_metrics(model, learning_data, 'test1')
             post_learning_metrics_test2 = learn_evaluate_results.post_learning_metrics(model, learning_data, 'test2')
@@ -67,7 +67,7 @@ def learn(dataset_name, dir_npy, model_manager, learning_data, loops_count=1):
         utils.dictionary_save(path, model_manager.get_properties())
         utils.dictionary_save(path, step2.step2_params)
         utils.dictionary_save(path, step3.step3_params)
-        if learning_metrics_template_this_fit['val_accuracy'] >= 0.5:
+        if learning_metrics_this_fit['val_accuracy'] >= 0.5:
             utils.dictionary_save(path, post_learning_metrics_val,   'val')
             utils.dictionary_save(path, post_learning_metrics_test1, 'train1')
             utils.dictionary_save(path, post_learning_metrics_test2, 'train2')
