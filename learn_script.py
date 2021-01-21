@@ -103,14 +103,14 @@ def loop_model(dataset_name, dir_npy, model_manager, learning_data):
     mm_dict = model_manager.get_properties()
     #
     mm_dict['model_architecture'] = 'Conv1D_Dense'
-    mm_dict['conv1D_block1_MaxPooling1D_pool_size'] = 0
+    mm_dict['conv1D_block1_MaxPooling1D_pool_size'] = 2
     mm_dict['config_GRU_LSTM_units'] = 128
     mm_dict['config_Dense_units'] = 96
     mm_dict['dropout_rate'] = 0.5
     mm_dict['optimizer_name'] = 'adam'
-    mm_dict['optimizer_modif_learning_rate'] = 0.75
+    mm_dict['optimizer_modif_learning_rate'] = 0.5
     #
-    mm_dict['fit_batch_size'] = 32
+    mm_dict['fit_batch_size'] = 16
     mm_dict['fit_epochs_max'] = 500
     mm_dict['fit_earlystopping_patience'] = 100
     #
