@@ -107,7 +107,7 @@ class ModelManager:
                             shuffle=False,
                             epochs=self.__model_dict['fit_epochs_max'],
                             callbacks=[callback],
-                            verbose=0,
+                            verbose=1,
                             validation_data=(learning_data['val']['np_X'],
                                              learning_data['val']['df_y_Nd']))
         #

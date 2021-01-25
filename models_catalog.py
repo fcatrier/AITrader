@@ -20,6 +20,8 @@ class ModelsCatalog:
             model = self.__create_model_LSTM_Dense(model_dict)
         elif model_dict['model_architecture'] == 'ResNet1D_dev':
             model = self.__create_model_resnet1D_dev(model_dict)
+        elif model_dict['model_architecture'] == 'Dense_ResNet_dev':
+            model = self.__create_model_Dense_Resnet_dev(model_dict)
         else:
             raise ValueError('Unknown model name')
         #
@@ -46,6 +48,33 @@ class ModelsCatalog:
         # sortie des classes
         #
         model.add(keras.layers.Dense(model_dict['output_shape'], activation='softmax'))
+        return model
+
+    @staticmethod
+    def __create_model_Dense_Resnet_dev(model_dict):
+        #
+        import keras
+        #
+        x_input = keras.Input(shape = (model_dict['input_timesteps'],model_dict['input_features']))
+
+        x = keras.layers.Dense(model_dict['config_Dense_units'], activation='relu')(x_input)
+        x = keras.layers.Dropout(model_dict['dropout_rate'])(x)
+        x = keras.layers.Flatten()(x)
+
+        # add
+        x = keras.layers.Add()([x, x_input])
+        x = keras.layers.Dense(model_dict['config_Dense_units'], activation='relu')(x)
+        x = keras.layers.Dropout(model_dict['dropout_rate'])(x)
+
+        x = keras.layers.Flatten()(x)
+        #
+        # sortie des classes
+        #
+        x = keras.layers.Dense(model_dict['output_shape'], activation='softmax')(x)
+
+        # define the model
+        model = keras.Model(inputs = x_input, outputs = x, name='Dense_Resnet')
+
         return model
 
     @staticmethod
@@ -159,12 +188,11 @@ class ModelsCatalog:
         #  https://pylessons.com/Keras-ResNet-tutorial/
         #  https://missinglink.ai/guides/keras/keras-resnet-building-training-scaling-residual-nets-keras/
         #
-        import keras
-        #
         x, x_input = self.__resnet_stage_entry(model_dict)
         #
-        x = self.res_conv(x, 64, model_dict)
-        # x = self.res_conv(x, 128, model_dict)
+        x = self.res_conv(x, 8, model_dict)
+        x = self.res_conv(x, 16, model_dict)
+        x = self.res_conv(x, 32, model_dict)
         # x = self.res_conv(x, 256, model_dict)
         # ...
         #
@@ -187,7 +215,8 @@ class ModelsCatalog:
 
         x_input = keras.Input(shape = (model_dict['input_timesteps'],model_dict['input_features']))
 
-        x = keras.layers.Conv1D(64, kernel_size=1)(x_input)
+        x = keras.layers.Conv1D(16, kernel_size=1)(x_input)
+        #x = keras.layers.Dropout(model_dict['dropout_rate'])(x)
         x = keras.layers.BatchNormalization()(x)
         x = keras.layers.Activation(keras.activations.relu)(x)
         x = keras.layers.MaxPooling1D(2)(x)
@@ -203,33 +232,40 @@ class ModelsCatalog:
 
         # first block
         x = keras.layers.Conv1D(filters, kernel_size=1)(x)
+        #x = keras.layers.Dropout(model_dict['dropout_rate'])(x)
         # when s = 2 then it is like downsizing the feature map
         x = keras.layers.BatchNormalization()(x)
         x = keras.layers.Activation(keras.activations.relu)(x)
 
         # second block
-        x = keras.layers.Conv1D(filters, kernel_size=3)(x)
-        x = keras.layers.BatchNormalization()(x)
-        x = keras.layers.Activation(keras.activations.relu)(x)
-
-        #third block
-        x = keras.layers.Conv1D(filters, kernel_size=1)(x)
-        x = keras.layers.BatchNormalization()(x)
+        # x = keras.layers.Conv1D(filters, kernel_size=1)(x)
+        # #x = keras.layers.Dropout(model_dict['dropout_rate'])(x)
+        # x = keras.layers.BatchNormalization()(x)
+        # x = keras.layers.Activation(keras.activations.relu)(x)
+        #
+        # #third block
+        # x = keras.layers.Conv1D(filters, kernel_size=1)(x)
+        #x = keras.layers.Dropout(model_dict['dropout_rate'])(x)
+        # x = keras.layers.BatchNormalization()(x)
 
         # shortcut
         x_skip = keras.layers.Conv1D(filters, kernel_size=1)(x_skip)
+        #x = keras.layers.Dropout(model_dict['dropout_rate'])(x)
         x_skip = keras.layers.BatchNormalization()(x_skip)
 
         # add
         x = keras.layers.Add()([x, x_skip])
         x = keras.layers.Activation(keras.activations.relu)(x)
+        #x = keras.layers.Dropout(model_dict['dropout_rate'])(x)
 
         return x
 
 
     def __resnet_stage_output(self, x, x_input, model_dict):
-
-        x = keras.layers.AveragePooling1D(2)(x)
+        #
+        import keras
+        #
+        # x = keras.layers.AveragePooling1D(2)(x)
         x = keras.layers.Flatten()(x)
         #
         # sortie des classes
